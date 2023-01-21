@@ -43,7 +43,7 @@ buttonEL.addEventListener('click', onclickStartTimer);
 function onclickStartTimer() {
   let timerId = setInterval(() => {
     nowDate = new Date();
-    diff = selectedDate - nowDate;
+    let diff = selectedDate - nowDate;
     convertMs(diff);
     if (diff <= 1000) {
       clearInterval(timerId);
