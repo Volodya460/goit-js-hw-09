@@ -17,9 +17,9 @@ boxTimetEl.style.marginLeft = '0';
 boxTimetEl.style.borderRadius = '5px';
 
 buttonEL.disabled = true;
-let nowDate = new Date();
-let selectedDate = '';
+let selectDate = null;
 let timerId = null;
+let diff = null;
 
 flatpickr('#datetime-picker', {
   enableTime: true,
@@ -27,14 +27,15 @@ flatpickr('#datetime-picker', {
   defaultDate: new Date(),
   minuteIncrement: 1,
 
-  onClose(selectedDates) {
-    if (selectedDates[0] < nowDate) {
+  onClose([selectedDates]) {
+    if (selectedDates < Date.now()) {
       Notify.warning('Please choose a date in the future');
     } else {
       buttonEL.disabled = false;
     }
-    selectedDate = selectedDates[0];
-    console.log(selectedDates[0]);
+    selectDate = selectedDates;
+
+    console.log(selectedDates);
   },
 });
 
@@ -42,20 +43,26 @@ buttonEL.addEventListener('click', onclickStartTimer);
 
 function onclickStartTimer() {
   let timerId = setInterval(() => {
-    nowDate = new Date();
-    let diff = selectedDate - nowDate;
-    convertMs(diff);
-    if (diff <= 1000) {
+    runTimer();
+    if (Math.floor(diff / 1000) < 0) {
       clearInterval(timerId);
       Notify.failure('GAME IS OVER');
     }
   }, 1000);
 
   buttonEL.disabled = true;
-
   document
     .getElementById('datetime-picker')
     .setAttribute('disabled', 'disabled');
+}
+
+function runTimer() {
+  let convertedTime = convertMs(diff);
+  daysSpanEl.textContent = addLeadingZero(convertedTime.days);
+  hoursSpanEl.textContent = addLeadingZero(convertedTime.hours);
+  minutesSpanEl.textContent = addLeadingZero(convertedTime.minutes);
+  secondsSpanEl.textContent = addLeadingZero(convertedTime.seconds);
+  diff = selectDate - Date.now();
 }
 
 function convertMs(ms) {
@@ -66,20 +73,13 @@ function convertMs(ms) {
   const day = hour * 24;
 
   // Remaining days
-  const days = addLeadingZero(Math.floor(ms / day));
+  const days = Math.floor(ms / day);
   // Remaining hours
-  const hours = addLeadingZero(Math.floor((ms % day) / hour));
+  const hours = Math.floor((ms % day) / hour);
   // Remaining minutes
-  const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
+  const minutes = Math.floor(((ms % day) % hour) / minute);
   // Remaining seconds
-  const seconds = addLeadingZero(
-    Math.floor((((ms % day) % hour) % minute) / second)
-  );
-
-  daysSpanEl.textContent = `${days}`;
-  hoursSpanEl.textContent = `${hours}`;
-  minutesSpanEl.textContent = `${minutes}`;
-  secondsSpanEl.textContent = `${seconds}`;
+  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
 }
