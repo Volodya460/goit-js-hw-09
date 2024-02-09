@@ -1,6 +1,7 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 const formEL = document.querySelector('.form');
+const Data = {};
 // const inputDelayEl = document.querySelector('input[name="delay"]');
 // const inputStepEl = document.querySelector('input[name="step"]');
 // const inputAmountEl = document.querySelector('input[name="amount"]');
@@ -20,8 +21,6 @@ function createPromise(position, delay) {
     }, delay);
   });
 }
-
-const Data = {};
 
 function startToCreatePromise(event) {
   event.preventDefault();
@@ -45,6 +44,7 @@ function startToCreatePromise(event) {
 }
 
 function onChengGetValue(eve) {
+
   const { delay, step, amount } = eve.currentTarget;
 
   Data.delay = delay.value;
